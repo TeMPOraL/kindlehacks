@@ -1,8 +1,10 @@
 #+title: Kindle Hacks
 
+* What is this?
 A general repository for my Kindle hacking ideas.
 
-* Remote controlling a presentation via Kindle
+* Subprojects
+** Remote controlling a presentation via Kindle
 The goal is to make a remote controller from Kindle. Because it seems
 there's no easy way to make Kindle talk wirelessly to a computer
 directly, this hack will require Internet access for both Kindle and
