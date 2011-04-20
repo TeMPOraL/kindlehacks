@@ -10,6 +10,15 @@ there's no easy way to make Kindle talk wirelessly to a computer
 directly, this hack will require Internet access for both Kindle and
 target computer.
 
+*** Webapp
 The idea is to create a web app that will interface Kindle with target
 computer, so that one could use Kindles build-in browser to control
 the presentation.
+
+**** TODO Test [[http://www.w3schools.com/jsref/event_onkeypress.asp][Javascript onkeypress() event]].
+
+*** Actuator
+This component will be responsible for issuing commands to
+presentation software by ie. faking keystrokes.
+
+**** TODO Skech actuator architecture.
