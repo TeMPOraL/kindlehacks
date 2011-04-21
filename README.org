@@ -22,3 +22,4 @@ This component will be responsible for issuing commands to
 presentation software by ie. faking keystrokes.
 
 **** TODO Skech actuator architecture.
+ 
