@@ -1,14 +1,21 @@
+;;; NOTE
+;;; To start the web side, call (hunchenoot:start (make-instance 'huchentoot:acceptor :port [port number]))
+
 ;;; Ensure we have Quicklisp running
 (load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
 
 ;;; Load web server and AJAX support
 (ql:quickload 'hunchentoot)
 (ql:quickload 'ht-simple-ajax)
+(ql:quickload 'cl-who)
+(ql:quickload 'parenscript)
 
 (defpackage :kindle-presentation-ctl
   (:use :common-lisp
 		:hunchentoot
-		:ht-simple-ajax))
+		:ht-simple-ajax
+		:cl-who
+		:parenscript))
 
 (in-package :kindle-presentation-ctl)
 
@@ -17,11 +24,11 @@
 (defun-ajax say-hi (name) (*ajax-processor*)
   (concatenate 'string "Hi " name ", nice to meet you!"))
 
+(defun-ajax handle-keypress (key) (*ajax-processor*)
+	(format t "Pressed key: ~a~%" key))
+
 (setq *dispatch-table* (list 'dispatch-easy-handlers
 							 (create-ajax-dispatcher *ajax-processor*)))
-
-(ql:quickload 'cl-who)
-(use-package :cl-who)
 
 (define-easy-handler (ajax-test :uri "/atest") ()
   (with-html-output-to-string (*standard-output* nil :prologue t)
@@ -36,11 +43,14 @@ function callback(response) {
 }
 
 // calls our Lisp function with the value of the text field
-function sayHi() {
+function sayhi() {
   ajax_say_hi(document.getElementById('name').value, callback);
 }
-"))
-     (:body
+")
+	  (:script :type "text/javascript" (ps (defun handle-keys (key)
+											 (ajax_handle_keypress key)))))
+	 
+     (:body :onkeypress (ps (handle-keys "foo"))
       (:p "Please enter your name: " 
           (:input :id "name" :type "text"))
-      (:p (:a :href "javascript:sayHi()" "Say Hi!"))))))
+      (:p (:a :href "" :onclick (ps (sayHi) (return false)) "Say Hi!"))))))

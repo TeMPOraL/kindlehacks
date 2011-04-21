@@ -1,8 +1,7 @@
 #+title: Kindle Hacks
 
 * What is this?
-A general repository for my Kindle hacking ideas.
-
+  A general repository for my Kindle hacking ideas.
 * Subprojects
 ** Remote controlling a presentation via Kindle
 The goal is to make a remote controller from Kindle. Because it seems
@@ -22,4 +21,3 @@ This component will be responsible for issuing commands to
 presentation software by ie. faking keystrokes.
 
 **** TODO Skech actuator architecture.
- 
