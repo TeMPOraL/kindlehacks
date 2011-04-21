@@ -25,7 +25,8 @@
   (concatenate 'string "Hi " name ", nice to meet you!"))
 
 (defun-ajax handle-keypress (key) (*ajax-processor*)
-	(format t "Pressed key: ~a~%" key))
+	(format t "Pressed key: ~a~%" key)
+	"oh hai")
 
 (setq *dispatch-table* (list 'dispatch-easy-handlers
 							 (create-ajax-dispatcher *ajax-processor*)))
@@ -47,10 +48,10 @@ function sayhi() {
   ajax_say_hi(document.getElementById('name').value, callback);
 }
 ")
-	  (:script :type "text/javascript" (ps (defun handle-keys (key)
-											 (ajax_handle_keypress key)))))
+	  (:script :type "text/javascript" (str (ps (defun handle-keys (key)
+											  (ajax_handle_keypress key callback))))))
 	 
-     (:body :onkeypress (ps (handle-keys "foo"))
+     (:body :onkeypress (ps (handle-keys 123))
       (:p "Please enter your name: " 
           (:input :id "name" :type "text"))
       (:p (:a :href "" :onclick (ps (sayHi) (return false)) "Say Hi!"))))))
