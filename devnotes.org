@@ -1,0 +1,13 @@
+#+title: Development Notes
+
+This document will store ideas, notes, todos, etc. - this way I can declutter README file ;).
+
+* Presentation
+
+** Webapp
+
+*** DONE Test [[http://www.w3schools.com/jsref/event_onkeypress.asp][Javascript onkeypress() event]].
+
+** Actuator
+
+*** TODO Skech actuator architecture.
