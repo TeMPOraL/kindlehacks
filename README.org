@@ -2,22 +2,41 @@
 
 * What is this?
   A general repository for my Kindle hacking ideas.
-* Subprojects
-** Remote controlling a presentation via Kindle
+* Sub-projects
+** *presentation* - Remote controlling a presentation via Kindle
 The goal is to make a remote controller from Kindle. Because it seems
 there's no easy way to make Kindle talk wirelessly to a computer
 directly, this hack will require Internet access for both Kindle and
 target computer.
+
+The idea of converting Kindle to a presentation remote may seem weird,
+as there are many better alternatives for controllers - cellphones,
+smartphones, dedicated presentation remotes, etc. Well, I don't have a
+smartphone, nor a dedicated controller; Bluetooth in the phone is a
+kludge, and I just got a Kindle and I want to play around with it ;).
+As an added value, I want to have Kindle display notes for
+presentation, which beats phones and dedicated controllers.
+
+The project is composed of two main parts - a webapp for receiving
+user input and displaying notes, and an actuator for switching slides
+and fetching the notes. The components are separate and one should be
+able to deploy them on separate machines or on a single computer.
 
 *** Webapp
 The idea is to create a web app that will interface Kindle with target
 computer, so that one could use Kindles build-in browser to control
 the presentation.
 
-**** TODO Test [[http://www.w3schools.com/jsref/event_onkeypress.asp][Javascript onkeypress() event]].
+The client side of the application will capture keys that user presses
+and transfer them to web server, which will delegate proper actions to
+the second part of this project - the remote Actuator. It will also
+receive new batches of notes to dynamically display on the page.
 
 *** Actuator
 This component will be responsible for issuing commands to
-presentation software by ie. faking keystrokes.
+presentation software, for example by faking keyboard input.
+I want it to work not only with PowerPoint, but also with [[http://prezi.com][Prezi]].
 
-**** TODO Skech actuator architecture.
+Moreover, this part will also send back presentation notes on request.
+I think it is good to keep presentation and presentation notes
+together.
