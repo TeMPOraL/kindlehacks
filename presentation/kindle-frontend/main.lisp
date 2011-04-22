@@ -21,11 +21,30 @@
 
 (defparameter *ajax-processor* (make-instance 'ajax-processor :server-uri "/ajax"))
 
+;;; Functions that actually do things (ie. call Actuator)
+(defun prev-slide ()
+  (format t "prev-slide called~%")	  ; FIXME send message to actuator
+  )
+
+(defun next-slide ()
+  (format t "next-slide called~%")		; FIXME as above
+  )
+
+(defun prev-notes ()
+  (format t "prev-notes called~%")		; FIXME as above
+  "Previous notes")
+
+(defun next-notes ()
+  (format t "next-notes called~%")		; FIXME as above
+  "Next notes")
+
+;;; Website handling functions
+
 (defun-ajax say-hi (name) (*ajax-processor*)
   (concatenate 'string "Hi " name ", nice to meet you!"))
 
 (defun-ajax handle-keypress (event) (*ajax-processor*)
-	(format t "Pressed key: ~a~%" key)
+	(format t "Pressed key: ~a~%" event)
 	event)
 
 (setq *dispatch-table* (list 'dispatch-easy-handlers
@@ -55,3 +74,14 @@ function sayhi() {
       (:p "Please enter your name: " 
           (:input :id "name" :type "text"))
       (:p (:a :href "" :onclick (ps (sayHi) (return false)) "Say Hi!"))))))
+
+(define-easy-handler (presentation :uri "/presentation") ()
+  (with-html-output-to-string (*standard-output* nil :prologue t)
+	(:html :xmlns "http://www.w3.org/1999/xhtml"
+		   (:head (:title "Presentation Control"))
+		   (:body
+			(:div
+			 (:h1 "Presentation Title")
+			 (:span "Javascript clock will go here."))
+			(:hr)
+			"Presentation notes"))))
