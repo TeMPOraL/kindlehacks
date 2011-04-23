@@ -75,17 +75,30 @@ function sayhi() {
           (:input :id "name" :type "text"))
       (:p (:a :href "" :onclick (ps (sayHi) (return false)) "Say Hi!"))))))
 
+
+;;; The Webapp Handler
+
 (define-easy-handler (presentation :uri "/presentation") ()
   (with-html-output-to-string (*standard-output* nil :prologue t)
 	(:html :xmlns "http://www.w3.org/1999/xhtml"
 		   (:head (:title "Presentation Control")
 				  (:script :language "text/javascript"
-						   (str (ps (defun change-notes (new-content)
-									  (setf (chain document (get-element-by-id "presentation-notes") inner-html)
-											new-content))
-									(defun change-title (new-title)
-									  (setf (chain document (get-element-by-id "presentation-title") inner-html)
-											new-title))))))
+						   (str (ps* *ps-lisp-library*))
+						   (str (ps
+								  ;; Define control keys
+								  ;; TODO more bindings
+								  (defvar *next-slide-keys* (array #\i #\o))
+								  (defvar *prev-slide-keys* (array #\w #\e))
+								  (defvar *next-notes-keys* (array #\p))
+								  (defvar *prev-notes-keys* (array #\q))
+								  (defun change-notes (new-content)
+									(setf (chain document (get-element-by-id "presentation-notes") inner-html)
+										  new-content))
+								  (defun change-title (new-title)
+									(setf (chain document (get-element-by-id "presentation-title") inner-html)
+										  new-title))
+								  (defun handle-keypress (key)
+									(member x y))))))
 		   (:body
 			(:div
 			 (:h1 :id "presentation-title" "Presentation Title")
