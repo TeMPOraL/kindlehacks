@@ -40,41 +40,8 @@
 
 ;;; Website handling functions
 
-(defun-ajax say-hi (name) (*ajax-processor*)
-  (concatenate 'string "Hi " name ", nice to meet you!"))
-
-(defun-ajax handle-keypress (event) (*ajax-processor*)
-    (format t "Pressed key: ~a~%" event)
-    event)
-
 (setq *dispatch-table* (list 'dispatch-easy-handlers
                              (create-ajax-dispatcher *ajax-processor*)))
-
-(define-easy-handler (ajax-test :uri "/atest") ()
-  (with-html-output-to-string (*standard-output* nil :prologue t)
-    (:html :xmlns "http://www.w3.org/1999/xhtml"
-     (:head
-      (:title "ht-simple-ajax demo")
-      (princ (generate-prologue *ajax-processor*))
-      (:script :type "text/javascript" "
-// will show the greeting in a message box
-function callback(response) {
-  alert(response.firstChild.firstChild.nodeValue);
-}
-
-// calls our Lisp function with the value of the text field
-function sayhi() {
-  ajax_say_hi(document.getElementById('name').value, callback);
-}
-")
-      (:script :type "text/javascript" (str (ps (defun handle-keys (event)
-                                              (ajax_handle_keypress event callback))))))
-     
-     (:body :onkeypress (ps (handle-keys event))
-      (:p "Please enter your name: " 
-          (:input :id "name" :type "text"))
-      (:p (:a :href "" :onclick (ps (sayHi) (return false)) "Say Hi!"))))))
-
 
 ;;; The Webapp Handler
 
@@ -84,6 +51,18 @@ function sayhi() {
            (:head (:title "Presentation Control")
                   (princ (generate-prologue *ajax-processor*))
                   (:script :type "text/javascript"
+                           ;; Parenscript 2.3 has a buggy `member' function in *ps-lisp-library*.
+                           ;; TODO Remove this workaround when PS gets fixed.
+                           "
+function member_trc(item, arr) {
+    for (var el = null, _js_idx126 = 0; _js_idx126 < arr.length; _js_idx126 += 1) {
+        el = arr[_js_idx126];
+        if (el === item) {
+            return true;
+        };
+    };
+    return false;
+};"
                            (str (ps* *ps-lisp-library*))
                            (str (ps
                                   ;; TODO the most important part still remains to be written - the code
@@ -97,7 +76,7 @@ function sayhi() {
                                   (defvar *next-notes-keys* (chars->codes (array #\P)))
                                   (defvar *prev-notes-keys* (chars->codes (array #\Q)))
                                   (defvar *refresh-page-keys* (array #\Space))
-                                  (alert (+ "keys: " *next-slide-keys*))
+
                                   (defun change-notes (new-content)
                                     (setf (chain document (get-element-by-id "presentation-notes") inner-h-t-m-l)
                                           (@ new-content first-child first-child node-value)))
@@ -111,13 +90,14 @@ function sayhi() {
                                     (let ((key (if (@ window event)
                                                    (@ window event key-code)
                                                    (if evt (@ e which)))))
-                                      (cond ((member key *next-slide-keys*) (ajax_prev_slide nil))
-                                            ((member key *prev-slide-keys*) (ajax_prev_slide nil))
-                                            ((member key *next-notes-keys*) (ajax_next_notes #'change-notes))
-                                            ((member key *prev-notes-keys*) (ajax_prev_notes #'change-notes))))
+                                      (cond ((member-trc key *next-slide-keys*) (ajax_next_slide nil))
+                                            ((member-trc key *prev-slide-keys*) (ajax_prev_slide nil))
+                                            ((member-trc key *next-notes-keys*) (ajax_next_notes #'change-notes))
+                                            ((member-trc key *prev-notes-keys*) (ajax_prev_notes #'change-notes))))
                                     (refresh-page-content))
                                   (defun refresh-page-content ()
                                     ;; TODO refresh clocks, whatever
+
                                     )
                                   (setf (@ document onkeydown) #'handle-keypress)))))
            (:body
