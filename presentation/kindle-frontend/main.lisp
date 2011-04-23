@@ -85,6 +85,9 @@ function sayhi() {
                   (:script :language "text/javascript"
                            (str (ps* *ps-lisp-library*))
                            (str (ps
+								  ;; TODO the most important part still remains to be written - the code
+								  ;; for actually fetching keypress events and converting them to usable char codes.
+
                                   ;; Define control keys
                                   ;; TODO more bindings
                                   (defvar *next-slide-keys* (array #\i #\o))
@@ -98,11 +101,19 @@ function sayhi() {
                                     (setf (chain document (get-element-by-id "presentation-title") inner-html)
                                           new-title))
                                   (defun handle-keypress (key)
-                                    ())))))
+                                    (cond ((member key *next-slide-keys*) (next-slide))
+										  ((member key *prev-slide-keys*) (prev-slide))
+										  ((member key *next-notes-keys*) (change-notes (next-notes)))
+										  ((member key *prev-notes-keys*) (change-notes (prev-notes))))
+									(refresh-page-content))
+								  (defun refresh-page-content ()
+									;; TODO refresh clocks, whatever
+									)))))
            (:body
             (:div
              (:h1 :id "presentation-title" "Presentation Title")
-             (:span "Javascript clock will go here."))
+             (:span :id "wall-clock" "Javascript wall clock will go here.")
+			 (:span :id "presentation-clock" "Presentation clock (ie. how long are you talking) will go here."))
             (:hr)
             (:div :id "presentation-notes"
                   "Presentation notes will go here.")))))
