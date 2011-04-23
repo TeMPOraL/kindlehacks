@@ -22,19 +22,19 @@
 (defparameter *ajax-processor* (make-instance 'ajax-processor :server-uri "/ajax"))
 
 ;;; Functions that actually do things (ie. call Actuator)
-(defun prev-slide ()
+(defun-ajax prev-slide () (*ajax-processor*)
   (format t "prev-slide called~%")    ; FIXME send message to actuator
   )
 
-(defun next-slide ()
+(defun-ajax next-slide () (*ajax-processor*)
   (format t "next-slide called~%")      ; FIXME as above
   )
 
-(defun prev-notes ()
+(defun-ajax prev-notes () (*ajax-processor*)
   (format t "prev-notes called~%")      ; FIXME as above
   "Previous notes")
 
-(defun next-notes ()
+(defun-ajax next-notes () (*ajax-processor*)
   (format t "next-notes called~%")      ; FIXME as above
   "Next notes")
 
@@ -82,6 +82,7 @@ function sayhi() {
   (with-html-output-to-string (*standard-output* nil :prologue t)
     (:html :xmlns "http://www.w3.org/1999/xhtml"
            (:head (:title "Presentation Control")
+                  (princ (generate-prologue *ajax-processor*))
                   (:script :type "text/javascript"
                            (str (ps* *ps-lisp-library*))
                            (str (ps
@@ -90,31 +91,35 @@ function sayhi() {
 
                                   ;; Define control keys
                                   ;; TODO more bindings
-                                  (defvar *next-slide-keys* (map (lambda (c) (chain c (char-code-at))) (array #\I #\O)))
-                                  (defvar *prev-slide-keys* (array #\w #\e))
-                                  (defvar *next-notes-keys* (array #\p))
-                                  (defvar *prev-notes-keys* (array #\q))
-								  (alert (+ "keys: " *next-slide-keys*))
+                                  (defun chars->codes (arr) (map (lambda (c) (chain c (char-code-at))) arr))
+                                  (defvar *next-slide-keys* (chars->codes (array #\Y #\U #\I #\O #\H #\J #\K #\L #\N #\M #\.)))
+                                  (defvar *prev-slide-keys* (chars->codes (array #\W #\E #\R #\T #\A #\S #\D #\F #\G #\Z #\X #\C #\V #\B)))
+                                  (defvar *next-notes-keys* (chars->codes (array #\P)))
+                                  (defvar *prev-notes-keys* (chars->codes (array #\Q)))
+                                  (defvar *refresh-page-keys* (array #\Space))
+                                  (alert (+ "keys: " *next-slide-keys*))
                                   (defun change-notes (new-content)
-                                    (setf (chain document (get-element-by-id "presentation-notes") inner-html)
-                                          new-content))
-                                  (defun change-title (new-title)
+                                    (setf (chain document (get-element-by-id "presentation-notes") inner-h-t-m-l)
+                                          (@ new-content first-child first-child node-value)))
+                                  (defun change-title (new-title)  ; FIXME unused - remove or use
                                     (setf (chain document (get-element-by-id "presentation-title") inner-html)
                                           new-title))
                                   (defun handle-keypress (evt)
-									(let ((key (if (@ window event)
-												   (@ window event key-code)
-												   (if evt (@ e which)))))
-									  (alert (+ "ala" key))
-									  (cond ((member key *next-slide-keys*) (progn (alert "alamakota") (next-slide)))
-											((member key *prev-slide-keys*) (prev-slide))
-											((member key *next-notes-keys*) (change-notes (next-notes)))
-											((member key *prev-notes-keys*) (change-notes (prev-notes)))))
+                                    ;; Key scanning code is based on some network research. There might be a browser-compatibility
+                                    ;; workaround hidden in it, I don't know. As long as it works on Kindle, I don't care at the moment.
+                                    ;; I'll investigate it when refactoring one day ;).
+                                    (let ((key (if (@ window event)
+                                                   (@ window event key-code)
+                                                   (if evt (@ e which)))))
+                                      (cond ((member key *next-slide-keys*) (ajax_prev_slide nil))
+                                            ((member key *prev-slide-keys*) (ajax_prev_slide nil))
+                                            ((member key *next-notes-keys*) (ajax_next_notes #'change-notes))
+                                            ((member key *prev-notes-keys*) (ajax_prev_notes #'change-notes))))
                                     (refresh-page-content))
                                   (defun refresh-page-content ()
                                     ;; TODO refresh clocks, whatever
                                     )
-								  (setf (@ document onkeydown) #'handle-keypress)))))
+                                  (setf (@ document onkeydown) #'handle-keypress)))))
            (:body
             (:div
              (:h1 :id "presentation-title" "Presentation Title")
