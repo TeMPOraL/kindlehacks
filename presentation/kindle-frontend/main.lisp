@@ -90,10 +90,11 @@ function sayhi() {
 
                                   ;; Define control keys
                                   ;; TODO more bindings
-                                  (defvar *next-slide-keys* (array #\i #\o))
+                                  (defvar *next-slide-keys* (map (lambda (c) (chain c (char-code-at))) (array #\I #\O)))
                                   (defvar *prev-slide-keys* (array #\w #\e))
                                   (defvar *next-notes-keys* (array #\p))
                                   (defvar *prev-notes-keys* (array #\q))
+								  (alert (+ "keys: " *next-slide-keys*))
                                   (defun change-notes (new-content)
                                     (setf (chain document (get-element-by-id "presentation-notes") inner-html)
                                           new-content))
@@ -101,14 +102,14 @@ function sayhi() {
                                     (setf (chain document (get-element-by-id "presentation-title") inner-html)
                                           new-title))
                                   (defun handle-keypress (evt)
-									(alert "kolorowe kredki")
 									(let ((key (if (@ window event)
 												   (@ window event key-code)
 												   (if evt (@ e which)))))
-									 (cond ((member key *next-slide-keys*) (progn (alert "alamakota") (next-slide)))
-										   ((member key *prev-slide-keys*) (prev-slide))
-										   ((member key *next-notes-keys*) (change-notes (next-notes)))
-										   ((member key *prev-notes-keys*) (change-notes (prev-notes)))))
+									  (alert (+ "ala" key))
+									  (cond ((member key *next-slide-keys*) (progn (alert "alamakota") (next-slide)))
+											((member key *prev-slide-keys*) (prev-slide))
+											((member key *next-notes-keys*) (change-notes (next-notes)))
+											((member key *prev-notes-keys*) (change-notes (prev-notes)))))
                                     (refresh-page-content))
                                   (defun refresh-page-content ()
                                     ;; TODO refresh clocks, whatever
