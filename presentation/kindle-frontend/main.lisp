@@ -102,7 +102,7 @@ function sayhi() {
                                     (setf (chain document (get-element-by-id "presentation-notes") inner-h-t-m-l)
                                           (@ new-content first-child first-child node-value)))
                                   (defun change-title (new-title)  ; FIXME unused - remove or use
-                                    (setf (chain document (get-element-by-id "presentation-title") inner-html)
+                                    (setf (chain document (get-element-by-id "presentation-title") inner-h-t-m-l)
                                           new-title))
                                   (defun handle-keypress (evt)
                                     ;; Key scanning code is based on some network research. There might be a browser-compatibility
