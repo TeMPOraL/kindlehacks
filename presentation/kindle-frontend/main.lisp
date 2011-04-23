@@ -71,11 +71,15 @@ function member_trc(item, arr) {
                                   ;; Define control keys
                                   ;; TODO more bindings
                                   (defun chars->codes (arr) (map (lambda (c) (chain c (char-code-at))) arr))
-                                  (defvar *next-slide-keys* (chars->codes (array #\Y #\U #\I #\O #\H #\J #\K #\L #\N #\M #\.)))
+                                  (defvar *next-slide-keys* (chars->codes (array #\Y #\U #\I #\O #\H #\J #\K #\L #\N #\M)))
                                   (defvar *prev-slide-keys* (chars->codes (array #\W #\E #\R #\T #\A #\S #\D #\F #\G #\Z #\X #\C #\V #\B)))
                                   (defvar *next-notes-keys* (chars->codes (array #\P)))
                                   (defvar *prev-notes-keys* (chars->codes (array #\Q)))
                                   (defvar *refresh-page-keys* (array #\Space))
+								  (defvar *reset-timer-keys* (array #\.))
+
+								  (defun reset-timer ()
+									)
 
                                   (defun change-notes (new-content)
                                     (setf (chain document (get-element-by-id "presentation-notes") inner-h-t-m-l)
@@ -93,12 +97,17 @@ function member_trc(item, arr) {
                                       (cond ((member_trc key *next-slide-keys*) (ajax_next_slide nil))
                                             ((member_trc key *prev-slide-keys*) (ajax_prev_slide nil))
                                             ((member_trc key *next-notes-keys*) (ajax_next_notes #'change-notes))
-                                            ((member_trc key *prev-notes-keys*) (ajax_prev_notes #'change-notes))))
+                                            ((member_trc key *prev-notes-keys*) (ajax_prev_notes #'change-notes))
+											((member_trc key *reset-timer-keys* (reset-timer)))))
                                     (refresh-page-content))
                                   (defun refresh-page-content ()
                                     ;; TODO refresh clocks, whatever
+									(let ((current-time (new  (-date))))
+									  (setf (chain document (get-element-by-id "wall-clock") inner-h-t-m-l)
+											(chain current-time (to-time-string)))))
 
-                                    )
+
+
                                   (setf (@ document onkeydown) #'handle-keypress)))))
            (:body
             (:div
