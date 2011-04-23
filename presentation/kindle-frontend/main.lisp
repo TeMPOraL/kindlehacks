@@ -82,7 +82,7 @@ function sayhi() {
   (with-html-output-to-string (*standard-output* nil :prologue t)
     (:html :xmlns "http://www.w3.org/1999/xhtml"
            (:head (:title "Presentation Control")
-                  (:script :language "text/javascript"
+                  (:script :type "text/javascript"
                            (str (ps* *ps-lisp-library*))
                            (str (ps
                                   ;; TODO the most important part still remains to be written - the code
@@ -100,15 +100,20 @@ function sayhi() {
                                   (defun change-title (new-title)
                                     (setf (chain document (get-element-by-id "presentation-title") inner-html)
                                           new-title))
-                                  (defun handle-keypress (key)
-                                    (cond ((member key *next-slide-keys*) (next-slide))
-                                          ((member key *prev-slide-keys*) (prev-slide))
-                                          ((member key *next-notes-keys*) (change-notes (next-notes)))
-                                          ((member key *prev-notes-keys*) (change-notes (prev-notes))))
+                                  (defun handle-keypress (evt)
+									(alert "kolorowe kredki")
+									(let ((key (if (@ window event)
+												   (@ window event key-code)
+												   (if evt (@ e which)))))
+									 (cond ((member key *next-slide-keys*) (progn (alert "alamakota") (next-slide)))
+										   ((member key *prev-slide-keys*) (prev-slide))
+										   ((member key *next-notes-keys*) (change-notes (next-notes)))
+										   ((member key *prev-notes-keys*) (change-notes (prev-notes)))))
                                     (refresh-page-content))
                                   (defun refresh-page-content ()
                                     ;; TODO refresh clocks, whatever
-                                    )))))
+                                    )
+								  (setf (@ document onkeydown) #'handle-keypress)))))
            (:body
             (:div
              (:h1 :id "presentation-title" "Presentation Title")
@@ -117,3 +122,6 @@ function sayhi() {
             (:hr)
             (:div :id "presentation-notes"
                   "Presentation notes will go here.")))))
+
+(defun start-this-thing (port)
+  (start (make-instance 'acceptor :port port)))
