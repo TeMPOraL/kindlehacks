@@ -80,6 +80,18 @@ function member_trc(item, arr) {
 
                                   (defun reset-timer ()
                                     )
+                                  
+                                  (defun enforce-2digits (number)
+                                    (if (< number 10)
+                                        (+ "0" number)
+                                        number))
+
+                                  (defun make-reasonably-looking-time (dateobj)
+                                    (+ (enforce-2digits (chain dateobj (get-hours)))
+                                       ":"
+                                       (enforce-2digits (chain dateobj (get-minutes)))
+                                       ":"
+                                       (enforce-2digits (chain dateobj (get-seconds)))))
 
                                   (defun change-notes (new-content)
                                     (setf (chain document (get-element-by-id "presentation-notes") inner-h-t-m-l)
@@ -104,8 +116,7 @@ function member_trc(item, arr) {
                                     ;; TODO refresh clocks, whatever
                                     (let ((current-time (new  (-date))))
                                       (setf (chain document (get-element-by-id "wall-clock") inner-h-t-m-l)
-                                            (chain current-time (to-time-string)) ;FIXME time value looks ugly
-                                            )))
+                                            (make-reasonably-looking-time current-time))))
 
 
 
