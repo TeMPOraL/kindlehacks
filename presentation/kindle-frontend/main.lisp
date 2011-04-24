@@ -134,7 +134,7 @@ function member_trc(item, arr) {
              (:span :id "wall-clock" "Javascript wall clock will go here.")
              (:span :id "presentation-clock" "Press any key to start the clock."))
             (:hr)
-            (:div :id "presentation-notes"
+            (:pre :id "presentation-notes"
                   "Presentation notes will go here.")))))
 
 (defun start-this-thing (port)
