@@ -8,18 +8,21 @@ This document will store ideas, notes, todos, etc. - this way I can declutter RE
 *** TODOs
 
 **** TODO Make a presentation-time clock.
-**** TODO Implement TCP communication part.
+
 **** TODO Add a nice stylesheet.
 	 Presentation title should be centered, clocks should be on the both sides of the page.
 **** TODO Reformat the text of the wall-clock (we don't need the full names of timezone and daylight saving mode)
 **** TODO Fix site heading (either remove or make it dynamically set)
 **** TODO Implement presentation clock resetting.
-**** TODO Implement notes.
-	 We can actually store all notes client-side and let (presentation) server update it only when there were some changes introduced to notes.
-	 Note switching would then be completely client-side.
+**** TODO Fix notes so that we can use a html text.
+**** TODO Design a note-passing protocol that would allow sending multi-line notes.
 
 *** DONEs
+**** DONE Implement TCP communication part.
 **** DONE Test [[http://www.w3schools.com/jsref/event_onkeypress.asp][Javascript onkeypress() event]].
+**** DONE Implement notes.
+	 We can actually store all notes client-side and let (presentation) server update it only when there were some changes introduced to notes.
+	 Note switching would then be completely client-side.
 
 ** Actuator
 
