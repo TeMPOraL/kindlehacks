@@ -12,6 +12,10 @@
 ;;; and decode notes without having to know anything specific about the format.
 ;;; Intermediate format is assumed to be a list of strings, each string representing a single note.
 ;;; Functions defined in this file accept and return data in Intermediate format.
+;;; 
+;;; NOTE it is guaranteed, that the conversions between Intermediate and Transport formats are fully reversible,
+;;; ie. (transport->intermediate (intermediate->transport notes)) should equal to notes.
+;;; FIXME enforce this via unit tests.
 
 (defun intermediate->transport (notes)
   (with-output-to-string (str)
