@@ -177,3 +177,29 @@ function member_trc(item, arr) {
   (defun set-notes (new-notes)
     (ccl:with-lock-grabbed (notes-lock)
       (setf notes new-notes))))
+
+
+(defun run-command-server (port)
+  "Initializes a command server on given port. The server will loop indefinetly accepting a single connection,
+then reading and interpreting commands from the other side, until the other side terminates the connection."
+  (let ((socket (ccl:make-socket :local-port port :connect :passive)))
+    (unwind-protect
+         (loop (with-open-stream (stream (ccl:accept-connection socket))
+                 (read-hello stream)
+                 (write-hello stream)
+                 (read-notes-until-end-of-connection stream)))
+      (ccl:shutdown socket))))
+
+(defun read-hello (stream)
+  "Reads and verifies 'hello' message from client. TODO do something on failure."
+  (format t "READ-HELLO: RECVD: ~a~%" (read-line stream)))
+
+(defun write-hello (stream)
+  "Writes a 'hello, go ahead' message to client."
+  (write-line "THIS IS OVERLORD, SEND YOUR TRAFFIC, OVER." stream))
+
+(defun read-notes-until-end-of-connection (stream)
+  "Will read note-change requests until other end terminates the connection."
+  (declare (ignore stream))
+  (error "oh come on.")
+  (format t "READ-NOTES-UNTIL-END-OF-CONNECTION, NYI.~%"))
