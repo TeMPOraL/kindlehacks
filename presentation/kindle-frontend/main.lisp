@@ -82,11 +82,13 @@ function member_trc(item, arr) {
                                     )
                                   
                                   (defun enforce-2digits (number)
+                                    "Adds a trailing zero to digits."
                                     (if (< number 10)
                                         (+ "0" number)
                                         number))
 
                                   (defun make-reasonably-looking-time (dateobj)
+                                    "Creates a nice time display from Date object."
                                     (+ (enforce-2digits (chain dateobj (get-hours)))
                                        ":"
                                        (enforce-2digits (chain dateobj (get-minutes)))
