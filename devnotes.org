@@ -4,6 +4,10 @@ This document will store ideas, notes, todos, etc. - this way I can declutter RE
 
 * Presentation
 
+It would be nice to keep everything under 600 lines of code. There was a post by (I think)
+Jeff Atwood about how much one can do in 600 lines of code. Let's see if I can finish this
+project under this limit ;).
+
 ** Webapp
 *** TODOs
 
