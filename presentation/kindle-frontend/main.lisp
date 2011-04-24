@@ -4,6 +4,9 @@
 ;;; Ensure we have Quicklisp running
 (load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
 
+;;; Load our protocol
+(load "../protocol/protocol.lisp")
+
 ;;; Load web server and AJAX support
 (ql:quickload 'hunchentoot)
 (ql:quickload 'ht-simple-ajax)
@@ -15,7 +18,9 @@
         :hunchentoot
         :ht-simple-ajax
         :cl-who
-        :parenscript))
+        :parenscript
+        :kindle-presentation-protocol)
+  (:export :start-this-thing))
 
 (in-package :kindle-presentation-ctl)
 

@@ -17,6 +17,13 @@
 ;;; ie. (transport->intermediate (intermediate->transport notes)) should equal to notes.
 ;;; FIXME enforce this via unit tests.
 
+(defpackage :kindle-presentation-protocol
+  (:use :common-lisp)
+  (:export :intermediate->transport
+		   :transport->intermediate))
+
+(in-package :kindle-presentation-protocol)
+
 (defun intermediate->transport (notes)
   (with-output-to-string (str)
     (print notes str)))
