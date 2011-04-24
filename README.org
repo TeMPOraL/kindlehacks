@@ -40,3 +40,6 @@ I want it to work not only with PowerPoint, but also with [[http://prezi.com][Pr
 Moreover, this part will also send back presentation notes on request.
 I think it is good to keep presentation and presentation notes
 together.
+
+* 
+[[http://www.sa-matra.net/quotes/orz/][This is the everything story. Now you know.]]

@@ -150,24 +150,28 @@ function member_trc(item, arr) {
         (b (max a b)))
     (min b (max a what))))
 
-(defvar *command-stream* nil)
 
+;;; COMMAND STREAM
+;;; A stream used to send commands to client.
 
-(let ((command-stream-lock (ccl:make-lock)))
+;;; NOTE there is no locking for reading from *command-stream* as it will be done from the same thread
+;;; from which change-command-stream-to is called.
+
+(let ((command-stream nil)
+      (command-stream-lock (ccl:make-lock)))
   (defun send-command (command)
     "Send a command (any lisp object) to the connected client. If the client is not connected, the message will be ignored."
     (ccl:with-lock-grabbed (command-stream-lock)
       (ignore-errors
-        (write-line command *command-stream*)
-        (force-output *command-stream*))))
+        (write-line command command-stream)
+        (force-output command-stream))))
 
   (defun change-command-stream-to (new-command-stream)
     "Change the stream to which commands are written."
     (ccl:with-lock-grabbed (command-stream-lock)
-      (setf *command-stream* new-command-stream))))
+      (setf command-stream new-command-stream))))
 
-;;; NOTE there is no locking for reading from *command-stream* as it will be done from the same thread
-;;; from which change-command-stream-to is called.
+;;; NOTES
 
 (let ((notes-lock (ccl:make-lock))
       (current-note 0)
@@ -198,7 +202,7 @@ function member_trc(item, arr) {
       (format t "Setting notes to: ~a~%" new-notes)
       (setf notes new-notes))))
 
-
+;;; COMMAND SERVER
 (defun run-command-server (port)
   "Initializes a command server on given port. The server will loop indefinetly accepting a single connection,
 then reading and interpreting commands from the other side, until the other side terminates the connection."
