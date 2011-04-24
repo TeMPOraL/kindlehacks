@@ -24,11 +24,11 @@
 ;;; Functions that actually do things (ie. call Actuator)
 (defun-ajax prev-slide () (*ajax-processor*)
   (format t "prev-slide called~%")      ; DEBUG, remove?
-  (send-command :prev-slide))
+  (send-command "prev-slide"))
 
 (defun-ajax next-slide () (*ajax-processor*)
   (format t "next-slide called~%")
-  (send-command :next-slide))
+  (send-command "next-slide"))
 
 (defun-ajax prev-notes () (*ajax-processor*)
   (format t "prev-notes called~%")      ; FIXME implement...
@@ -140,7 +140,7 @@ function member_trc(item, arr) {
     "Send a command (any lisp object) to the connected client. If the client is not connected, the message will be ignored."
     (ccl:with-lock-grabbed (command-stream-lock)
       (ignore-errors
-        (print command *command-stream*)
+        (write-line command *command-stream*)
         (force-output *command-stream*))))
 
   (defun change-command-stream-to (new-command-stream)
