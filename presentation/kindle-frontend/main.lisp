@@ -189,12 +189,16 @@ then reading and interpreting commands from the other side, until the other side
          (loop (with-open-stream (stream (ccl:accept-connection socket))
                  (read-hello stream)
                  (write-hello stream)
-                 (read-notes-until-end-of-connection stream)))
+                 ;; we got so far, so it seems that hello went ok - let's rebind command stream
+                 (change-command-stream-to stream)
+                 (read-notes-until-end-of-connection stream)
+                 (change-command-stream-to nil)))
       (close socket :abort t)
       (format t "RUN-COMMAND-SERVER: command server aborted; socked freed."))))
 
 (defun read-hello (stream)
   "Reads and verifies 'hello' message from client. TODO do something on failure."
+  ;; TODO implement verification - maybe signal an 'unauthorized' condition?
   (format t "READ-HELLO: RECVD: ~a~%" (read-line stream)))
 
 (defun write-hello (stream)
