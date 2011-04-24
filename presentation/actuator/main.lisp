@@ -11,7 +11,11 @@
 (in-package :kindle-presentation-actuator)
 
 (defparameter *cookie* "OVERLORD, THIS IS RAPTOR 2-1, STANDBY FOR SITREP, OVER.")
-(defparameter *notes* '("Sample notes." "More sample notes." "Even more sample notes."))
+(defparameter *notes* '("Sample notes." "More sample notes." "Even more sample notes."
+                        "A
+multiline
+
+note"))
 
 ;;; Interface for controlling presentation
 (defun next-slide ()
