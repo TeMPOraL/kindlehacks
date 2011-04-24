@@ -32,11 +32,11 @@
 
 (defun-ajax prev-notes () (*ajax-processor*)
   (format t "prev-notes called~%")      ; FIXME implement...
-  "Previous notes")
+  (get-prev-note))
 
 (defun-ajax next-notes () (*ajax-processor*)
   (format t "next-notes called~%")      ; FIXME as above
-  "Next notes")
+  (get-next-note))
 
 ;;; Website handling functions
 
