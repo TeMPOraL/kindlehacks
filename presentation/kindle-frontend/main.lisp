@@ -140,7 +140,8 @@ function member_trc(item, arr) {
     "Send a command (any lisp object) to the connected client. If the client is not connected, the message will be ignored."
     (ccl:with-lock-grabbed (command-stream-lock)
       (ignore-errors
-        (print command *command-stream*))))
+        (print command *command-stream*)
+        (force-output *command-stream*))))
 
   (defun change-command-stream-to (new-command-stream)
     "Change the stream to which commands are written."
@@ -182,13 +183,15 @@ function member_trc(item, arr) {
 (defun run-command-server (port)
   "Initializes a command server on given port. The server will loop indefinetly accepting a single connection,
 then reading and interpreting commands from the other side, until the other side terminates the connection."
+  ;; TODO maybe put a nicely named restart here?
   (let ((socket (ccl:make-socket :local-port port :connect :passive)))
     (unwind-protect
          (loop (with-open-stream (stream (ccl:accept-connection socket))
                  (read-hello stream)
                  (write-hello stream)
                  (read-notes-until-end-of-connection stream)))
-      (ccl:shutdown socket))))
+      (close socket :abort t)
+      (format t "RUN-COMMAND-SERVER: command server aborted; socked freed."))))
 
 (defun read-hello (stream)
   "Reads and verifies 'hello' message from client. TODO do something on failure."
@@ -196,10 +199,15 @@ then reading and interpreting commands from the other side, until the other side
 
 (defun write-hello (stream)
   "Writes a 'hello, go ahead' message to client."
-  (write-line "THIS IS OVERLORD, SEND YOUR TRAFFIC, OVER." stream))
+  (write-line "THIS IS OVERLORD, SEND YOUR TRAFFIC, OVER." stream)
+  (force-output stream))
 
 (defun read-notes-until-end-of-connection (stream)
   "Will read note-change requests until other end terminates the connection."
-  (declare (ignore stream))
-  (error "oh come on.")
-  (format t "READ-NOTES-UNTIL-END-OF-CONNECTION, NYI.~%"))
+  (ignore-errors
+    (let ((end-connection nil))         ; will be set to t if client requests ending the connection gracefully
+      (while (not end-connection)
+        (let ((stuff (read-line stream)))
+          (if (string= stuff "end" :end1 2 :end2 2)
+              (setf end-connection t)
+              (format t "READ-NOTES-UNTIL-END-OF-CONNECTION: READ ~a~%" stuff)))))))
