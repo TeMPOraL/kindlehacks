@@ -28,7 +28,7 @@
     (unwind-protect
          (progn
            (authorize socket)
-           (send-notes *notes* socket)
+           (send-all-notes socket)
            (receive-commands-until-bored socket))
       (close socket))))
 
@@ -37,6 +37,10 @@
   (force-output stream)
   (let ((response (read-line stream)))
     (format t "RECVD: ~a~%" response)))
+
+(defun send-all-notes (socket)
+  (write-line "notes" socket)
+  (send-notes *notes* socket))
 
 (defun receive-commands-until-bored (stream)
   (loop (let ((line (read-line stream)))
