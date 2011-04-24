@@ -12,22 +12,20 @@
 ;;; and decode notes without having to know anything specific about the format.
 ;;; Intermediate format is assumed to be a list of strings, each string representing a single note.
 ;;; Functions defined in this file accept and return data in Intermediate format.
-;;; 
-;;; NOTE it is guaranteed, that the conversions between Intermediate and Transport formats are fully reversible,
-;;; ie. (transport->intermediate (intermediate->transport notes)) should equal to notes.
-;;; FIXME enforce this via unit tests.
+
 
 (defpackage :kindle-presentation-protocol
   (:use :common-lisp)
   (:export :intermediate->transport
-		   :transport->intermediate))
+           :transport->intermediate
+           :recv-notes
+           :send-notes))
 
 (in-package :kindle-presentation-protocol)
 
-(defun intermediate->transport (notes)
-  (with-output-to-string (str)
-    (print notes str)))
+(defun recv-notes (stream)
+  (read stream))
 
-(defun transport->intermediate (notes)
-  (with-input-from-string (input notes)
-    (read input)))
+(defun send-notes (notes stream)
+  (print notes stream)
+  (force-output stream))

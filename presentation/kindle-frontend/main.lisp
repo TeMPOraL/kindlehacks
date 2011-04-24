@@ -230,6 +230,6 @@ then reading and interpreting commands from the other side, until the other side
     (let ((end-connection nil))         ; will be set to t if client requests ending the connection gracefully
       (while (not end-connection)
         (let ((stuff (read-line stream)))
-          (if (string= stuff "end" :end1 2 :end2 2)
-              (setf end-connection t)
-              (format t "READ-NOTES-UNTIL-END-OF-CONNECTION: READ ~a~%" stuff)))))))
+          (cond ((string= stuff "end" :end1 2 :end2 2) (setf end-connection t))
+                ((string= stuff "notes" :end1 4 :end2 4) (set-notes (recv-notes stream)))
+                (t (format t "READ-NOTES-UNTIL-END-OF-CONNECTION: READ ~a~%" stuff))))))))
