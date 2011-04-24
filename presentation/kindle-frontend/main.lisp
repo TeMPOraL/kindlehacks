@@ -23,15 +23,15 @@
 
 ;;; Functions that actually do things (ie. call Actuator)
 (defun-ajax prev-slide () (*ajax-processor*)
-  (format t "prev-slide called~%")    ; FIXME send message to actuator
-  )
+  (format t "prev-slide called~%")      ; DEBUG, remove?
+  (send-command :prev-slide))
 
 (defun-ajax next-slide () (*ajax-processor*)
-  (format t "next-slide called~%")      ; FIXME as above
-  )
+  (format t "next-slide called~%")
+  (send-command :next-slide))
 
 (defun-ajax prev-notes () (*ajax-processor*)
-  (format t "prev-notes called~%")      ; FIXME as above
+  (format t "prev-notes called~%")      ; FIXME implement...
   "Previous notes")
 
 (defun-ajax next-notes () (*ajax-processor*)
@@ -76,10 +76,10 @@ function member_trc(item, arr) {
                                   (defvar *next-notes-keys* (chars->codes (array #\P)))
                                   (defvar *prev-notes-keys* (chars->codes (array #\Q)))
                                   (defvar *refresh-page-keys* (array #\Space))
-								  (defvar *reset-timer-keys* (array #\.))
+                                  (defvar *reset-timer-keys* (array #\.))
 
-								  (defun reset-timer ()
-									)
+                                  (defun reset-timer ()
+                                    )
 
                                   (defun change-notes (new-content)
                                     (setf (chain document (get-element-by-id "presentation-notes") inner-h-t-m-l)
@@ -98,13 +98,14 @@ function member_trc(item, arr) {
                                             ((member_trc key *prev-slide-keys*) (ajax_prev_slide nil))
                                             ((member_trc key *next-notes-keys*) (ajax_next_notes #'change-notes))
                                             ((member_trc key *prev-notes-keys*) (ajax_prev_notes #'change-notes))
-											((member_trc key *reset-timer-keys* (reset-timer)))))
+                                            ((member_trc key *reset-timer-keys* (reset-timer)))))
                                     (refresh-page-content))
                                   (defun refresh-page-content ()
                                     ;; TODO refresh clocks, whatever
-									(let ((current-time (new  (-date))))
-									  (setf (chain document (get-element-by-id "wall-clock") inner-h-t-m-l)
-											(chain current-time (to-time-string)))))
+                                    (let ((current-time (new  (-date))))
+                                      (setf (chain document (get-element-by-id "wall-clock") inner-h-t-m-l)
+                                            (chain current-time (to-time-string)) ;FIXME time value looks ugly
+                                            )))
 
 
 
@@ -113,10 +114,66 @@ function member_trc(item, arr) {
             (:div
              (:h1 :id "presentation-title" "Presentation Title")
              (:span :id "wall-clock" "Javascript wall clock will go here.")
-             (:span :id "presentation-clock" "Presentation clock (ie. how long are you talking) will go here."))
+             (:span :id "presentation-clock" "Press any key to start the clock."))
             (:hr)
             (:div :id "presentation-notes"
                   "Presentation notes will go here.")))))
 
 (defun start-this-thing (port)
+  "Start up the web server and (TODO) presentation controller interface on given ports."
   (start (make-instance 'acceptor :port port)))
+
+
+;;; Client-server communication handler
+
+(defun clamp (a b what)
+  "Clamp input value to range <a, b>. If a > b, values are swapped."
+  (let ((a (min a b))
+        (b (max a b)))
+    (min b (max a what))))
+
+(defvar *command-stream* nil)
+
+
+(let ((command-stream-lock (ccl:make-lock)))
+  (defun send-command (command)
+    "Send a command (any lisp object) to the connected client. If the client is not connected, the message will be ignored."
+    (ccl:with-lock-grabbed (command-stream-lock)
+      (ignore-errors
+        (print command *command-stream*))))
+
+  (defun change-command-stream-to (new-command-stream)
+    "Change the stream to which commands are written."
+    (ccl:with-lock-grabbed (command-stream-lock)
+      (setf *command-stream* new-command-stream))))
+
+;;; NOTE there is no locking for reading from *command-stream* as it will be done from the same thread
+;;; from which change-command-stream-to is called.
+
+(let ((notes-lock (ccl:make-lock))
+      (current-note 0)
+      (notes '()))
+
+  (defun get-next-note ()
+    "Returns a next note, and as additional values, index of this note (counting from 1) and number of notes available. Notes do not wrap around."
+    (ccl:with-lock-grabbed (notes-lock)
+      (if (not (null notes))
+          (let ((len (length notes)))
+            (setf current-note (clamp 0 (1- len) (1+ current-note)))
+            (values (nth current-note notes)
+                    (1+ current-note)
+                    len)))))
+
+  (defun get-prev-note ()
+    "Returns a previous note, and as additional values, index of this note (counting from 1) and number of notes available. Notes do not wrap around."
+    (ccl:with-lock-grabbed (notes-lock)
+      (if (not (null notes))
+          (let ((len (length notes)))
+            (setf current-note (clamp 0 (1- len) (1- current-note)))
+            (values (nth current-note notes)
+                    (1+ current-note)
+                    len)))))
+
+  (defun set-notes (new-notes)
+    (ccl:with-lock-grabbed (notes-lock)
+      (setf notes new-notes))))
