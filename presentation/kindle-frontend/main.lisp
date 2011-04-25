@@ -112,7 +112,7 @@ function member_trc(item, arr) {
                                     ;; I'll investigate it when refactoring one day ;).
                                     (let ((key (if (@ window event)
                                                    (@ window event key-code)
-                                                   (if evt (@ e which)))))
+                                                   (if evt (@ evt which)))))
                                       (cond ((member_trc key *next-slide-keys*) (ajax_next_slide nil))
                                             ((member_trc key *prev-slide-keys*) (ajax_prev_slide nil))
                                             ((member_trc key *next-notes-keys*) (ajax_next_notes #'change-notes))
