@@ -52,3 +52,11 @@ note"))
 
 
 ;;; Implementation of presentation controll
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (open-shared-library "user32.dll"))
+
+(defun testkey ()
+  (sleep 2)
+  (#_keybd_event #x25 0 0 0)
+  (sleep 1)
+  (#_keybd_event #x25 0 #$KEYEVENTF_KEYUP 0))
