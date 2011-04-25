@@ -19,11 +19,11 @@ note"))
 
 ;;; Interface for controlling presentation
 (defun next-slide ()
-  ;; do magic
+  (magic-press-rightarrow)
   (print :next-slide))
 
 (defun prev-slide ()
-  ;; do magic
+  (magic-press-leftarrow)
   (print :next-slide))
 
 ;;; Running the whole system
@@ -53,7 +53,21 @@ note"))
 
 ;;; Implementation of presentation controll
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (open-shared-library "user32.dll"))
+  (ccl:open-shared-library "user32.dll"))
+
+(defconstant +vk-left+ #x25)
+(defconstant +vk-right+ #x27)
+
+(defun magic-press-leftarrow ()
+  (magic-press-key +vk-left+))
+
+(defun magic-press-rightarrow ()
+  (magic-press-key +vk-right+))
+
+(defun magic-press-key (keycode &key (delay 0.5))
+  (#_keybd_event keycode 0 0 0)
+  (sleep delay)
+  (#_keybd_event keycode 0 #$KEYEVENTF_KEYUP 0))
 
 (defun testkey ()
   (sleep 2)
