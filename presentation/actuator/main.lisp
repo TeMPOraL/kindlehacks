@@ -48,6 +48,12 @@ note"))
 
 (defun receive-commands-until-bored (stream)
   (loop (let ((line (read-line stream)))
+          (cond ((and (> (length line) 9)
+                      (string= line "next-slide" :end1 9 :end2 9))
+                 (next-slide))
+                ((and (> (length line) 9)
+                      (string= line "prev-slide" :end1 9 :end2 9))
+                 (prev-slide)))
           (format t "RCVD (loop): ~a~%" line))))
 
 
@@ -68,9 +74,3 @@ note"))
   (#_keybd_event keycode 0 0 0)
   (sleep delay)
   (#_keybd_event keycode 0 #$KEYEVENTF_KEYUP 0))
-
-(defun testkey ()
-  (sleep 2)
-  (#_keybd_event #x25 0 0 0)
-  (sleep 1)
-  (#_keybd_event #x25 0 #$KEYEVENTF_KEYUP 0))
