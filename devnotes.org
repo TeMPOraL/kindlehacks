@@ -8,6 +8,9 @@ It would be nice to keep everything under 600 lines of code. There was a post by
 Jeff Atwood about how much one can do in 600 lines of code. Let's see if I can finish this
 project under this limit ;).
 
+Well, this goal seems to be not too difficult - most important features are already working
+and I'm still around 300 effective lines of code.
+
 ** Webapp
 *** TODOs
 
@@ -31,7 +34,9 @@ project under this limit ;).
 **** DONE Design a note-passing protocol that would allow sending multi-line notes.
 
 ** Actuator
-*** TODO Implement keypress simulation (Win32)
+*** TODOs
+*** DONEs
+*** DONE Implement keypress simulation (Win32)
 
 ** Transport format
 *** TODO Make it more secure against hacking.
